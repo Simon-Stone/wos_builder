@@ -14,10 +14,10 @@ log_levels = { "DEBUG"   : logging.DEBUG,
                "CRITICAL": logging.CRITICAL
 }
 
-def load_data(datafile):    
+def load_data(datafile):
     context = ET.iterparse(datafile, events=("start", "end"))
     logging.debug("Got context")
-    context = iter(context)    
+    context = iter(context)
     return context
 
 # uid -> wos_id, citedAuthor, year , page, volume, citedTitle, citedWork, doi
@@ -31,7 +31,7 @@ def extract_references(wos_id, elem):
             #print ref.tag, ref.text
             cur[str(ref.tag)] = ref.text
         references.extend([cur])
-        
+
     return references
 
 def extract_editions(wos_id, elem):
@@ -39,14 +39,14 @@ def extract_editions(wos_id, elem):
              'edition': i.attrib['value']} for i in elem.iterfind('./static_data/summary/EWUID/edition')]
 
 
-    
+
 def extract_addresses(wos_id, elem):
     addresslist = []
     name_address_relation = []
-    
+
     for addresses in elem.iterfind('./static_data/fullrecord_metadata/addresses/address_name'):
-        
-        #print "-"*50        
+
+        #print "-"*50
         addr = {'wos_id'   : wos_id,
                 'addr_num' : list(addresses.iterfind('./address_spec'))[0].attrib['addr_no'],
                 'organization' : 'NULL'
@@ -64,7 +64,7 @@ def extract_addresses(wos_id, elem):
         if not orgs :
             orgs = ['NULL']
         #print "Organizations : ", orgs
-                    
+
         suborgs = []
         for item in addresses.iter():
             if item.tag == 'suborganization':
@@ -80,7 +80,7 @@ def extract_addresses(wos_id, elem):
                 temp = addr.copy()
                 temp.update(t)
                 addresslist.extend([temp])
-                
+
         #print addresslist
         for name in list(addresses.iterfind('./names/name')):
             #print "Name: ", name.tag, name.attrib
@@ -90,11 +90,11 @@ def extract_addresses(wos_id, elem):
                                            'addr_num' : name.attrib['addr_no']}])
     #print addresslist
     return addresslist, name_address_relation
-        
+
 
 def extract_authors(wos_id, elem):
-    authors = []    
-    
+    authors = []
+
     for names in elem.iterfind('./static_data/summary/names'):
         for name in names:
             author = {'wos_id'   : wos_id,
@@ -105,7 +105,7 @@ def extract_authors(wos_id, elem):
             for item in name.iter():
                 author[str(item.tag)] = str(item.text)
             authors.extend([author])
-        
+
     return authors
 
 def extract_publisher(wos_id, elem):
@@ -125,8 +125,8 @@ def extract_conferences(wos_id, elem):
 
     for conf in list(elem.iterfind('./static_data/summary/conferences/conference')):
         # Do try catch on each of these
-        
-        conference = {'wos_id' : wos_id}        
+
+        conference = {'wos_id' : wos_id}
         conference['conf_id'] = conf.attrib.get('conf_id', 'NULL')
 
         try :
@@ -157,19 +157,19 @@ def extract_conferences(wos_id, elem):
             conference['conf_host']  = list(conf.iterfind('./conf_locations/conf_location/conf_host'))[0].text
         except Exception as e:
             conference['conf_host']  = 'NULL'
-            
+
         for sponsor in list(conf.iterfind('./sponsors/sponsor')):
             #print "Sponsor {0}/{1}: {2}".format(wos_id, conference['conf_id'], sponsor.text)
             sponsors.extend([{'wos_id' : wos_id,
                               'conf_id' : conference['conf_id'],
                               'sponsor' : sponsor.text}])
-            
+
         conferences.extend([conference])
     #print conference
     #print sponsors
     return conferences, sponsors
 
-            
+
 def extract_funding(wos_id, elem):
     funding = []
     text = 'NULL'
@@ -177,9 +177,9 @@ def extract_funding(wos_id, elem):
         for para in t.iter():
             #print para.tag, para.text
             if text == 'NULL':
-                text = ''            
+                text = ''
             text = text + str(para.text) + '\n'
-            
+
     for g in list(elem.iterfind('./static_data/fullrecord_metadata/fund_ack/grants/grant')):
         grant_agency = None
         for agency in g.iterfind('./grant_agency') :
@@ -187,10 +187,10 @@ def extract_funding(wos_id, elem):
             #print "AGENCY: ", grant_agency
 
         grant_id_list = []
-        for grant_id in g.iterfind('./grant_ids/grant_id') :            
+        for grant_id in g.iterfind('./grant_ids/grant_id') :
             #print "TAG: ", grant_id.tag, grant_id.text
             grant_id_list.extend([str(grant_id.text)])
-        
+
         if not grant_id_list :
             grant_id_list = ['NULL']
 
@@ -205,7 +205,7 @@ def extract_funding(wos_id, elem):
         fundingText = [{'wos_id' : wos_id,
                         'funding_text' : text}]
     return fundingText, funding
-                                                                                                                    
+
 def extract_pub_info(wos_id, elem):
     pub = {'wos_id': wos_id}
 
@@ -218,13 +218,13 @@ def extract_pub_info(wos_id, elem):
         #print list(elem.find('pub_info'))
         #print pub
         logging.error("{0} Could not capture pub_info, Skipping document.".format(wos_id))
-        raise 
-    
-    # Get title, source, and source abbreviations   
+        raise
+
+    # Get title, source, and source abbreviations
     for i in elem.iterfind('./static_data/summary/titles/title'):
-        pub[str(i.attrib['type'])] = i.text 
-    
-    # Get document type    
+        pub[str(i.attrib['type'])] = i.text
+
+    # Get document type
     try:
         pub['doc_type'] = list(elem.iterfind('./static_data/summary/doctypes/doctype'))[0].text
     except Exception as e:
@@ -247,14 +247,14 @@ def extract_pub_info(wos_id, elem):
     for x in list(elem.iterfind('./static_data/fullrecord_metadata/category_info/headings/heading')):
         headings.extend([{'wos_id': wos_id,
                           'heading': x.text }])
-    
+
     subheadings = []
     for sub in list(elem.iterfind('./static_data/fullrecord_metadata/category_info/subheadings/subheading')):
         #print sub.tag, sub.attrib, sub.text
         subheadings.extend([{'wos_id': wos_id,
                              'subheading': sub.text }])
     #print "Subheadings : ", subheadings
-    
+
     subjects = []
     for sub in list(elem.iterfind('./static_data/fullrecord_metadata/category_info/subjects/subject')):
         #print sub.tag, sub.attrib, sub.text
@@ -282,8 +282,8 @@ def extract_pub_info(wos_id, elem):
             abstract_text = ''
         abstract_text = abstract_text + '\n<p>' + ab.text + '</p>'
     pub['abstract'] = abstract_text
-            
-         
+
+
     return [pub], languages, headings, subheadings, subjects
 
 
@@ -295,12 +295,12 @@ def extract_keywords(wos_id, elem):
         #print "Keyword :", keyword.text
         keywords.extend([{'wos_id' : wos_id,
                           'keyword' : keyword.text}])
-                
+
     for keyword in list(elem.iterfind('./static_data/item/keywords_plus/keyword')):
         #print "Plus ", keyword.tag, keyword.text
         keywordsplus.extend([{'wos_id' : wos_id,
                               'keyword' : keyword.text}])
-        
+
     return keywords, keywordsplus
 
 # From stackoverflow
@@ -309,38 +309,41 @@ def chunks(l, count):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(l), count):
         yield l[i:i+count]
-        
+
 def dump(data, header, sql_header, table_name, file_name, data_format="sql"):
     chunksize = 1000
-    
+
     print("Writing out {0} to {1}".format(table_name, file_name))
 
     if data_format == "sql" :
         print("Writing SQL output")
         with open(file_name, 'w') as f_handle:
-        
+
             f_handle.write(sql_header.format(table_name))
             f_handle.write('\n')
             for chunk in chunks(data, 1000):
                 f_handle.write("INSERT IGNORE INTO {0} ({1})\n".format(table_name, ', '.join(header)))
                 f_handle.write("VALUES\n")
 
-                for row in chunk :
-                    f_handle.write('\n(')
+                for idx, row in enumerate(chunk):
+                    f_handle.write('(')
                     f_handle.write(','.join([json.dumps(row.get(attr, 'NULL')) for attr in header]))
-                    f_handle.write('),')            
+                    f_handle.write(')')
+                    if idx == len(chunk)-1:
+                        f_handle.write(';')
+                    else:
+                        f_handle.write(',')
+                    f_handle.write('\n')
 
-                f_handle.seek(-1, 1)
-                f_handle.write(';\n')
     elif data_format == "json" :
         print("Writing json")
         datadict = { table_name : data }
         with open(file_name, 'wb') as f_handle:
             json.dump(datadict, f_handle)
     return
-        
+
 if __name__ == "__main__" :
-    
+
     parser   = argparse.ArgumentParser()
     parser.add_argument("-s", "--sourcefile", default="sample.xml", help="Path to data file")
     parser.add_argument("-v", "--verbosity", default="DEBUG", help="set level of verbosity, DEBUG, INFO, WARN")
@@ -349,13 +352,13 @@ if __name__ == "__main__" :
     args   = parser.parse_args()
 
     print("Processing : {0}".format(args.logfile))
-    
+
     logging.basicConfig(filename=args.logfile, level=log_levels[args.verbosity],
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%m-%d %H:%M')
 
     logging.debug("Document processing starts")
-    
+
     context = load_data(args.sourcefile)
     print("Done loading data into etree context")
     total = 0
@@ -363,16 +366,16 @@ if __name__ == "__main__" :
     for event, elem in context:
         if event != "start" :
             continue
-        pub = {} 
+        pub = {}
         if elem.tag == 'REC':
             total += 1
             try:
                 wos_id = list(elem.iterfind('UID'))[0].text
 
-                pub = extract_pub_info(wos_id, elem)            
+                pub = extract_pub_info(wos_id, elem)
                 publisher = extract_publisher(wos_id, elem)
                 authors = extract_authors(wos_id, elem)
-                
+
             except Exception as e:
                 print("Skipping... {0}".format(wos_id))
                 bad += 1
