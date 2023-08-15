@@ -1,14 +1,7 @@
 # wos_builder
-Create and populate a MySQL Database from Web of Science raw xml data
 
-## Requirements
+Create and populate a MySQL Database from Web of Science raw XML data
 
-mysql.connector
+## Getting Started
 
-I downloaded this binary from the MySQL pages and installed as sudo :
-
-wget http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python_2.1.4-1ubuntu16.04_all.deb
-dpkg -i mysql-connector-python-cext-py3_2.1.4-1debian8.2_amd64.deb
-
-
-cElementTree
+Run `python driver.py --help` to learn more about how to use the tool.
