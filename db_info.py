@@ -279,6 +279,6 @@ if __name__ == "__main__":
                   t_institutions, t_references, t_fundingtexts, t_funding, t_keywords,
                   t_keywords_plus, t_languages, t_subheadings, t_headings,
                   t_subjects, t_conferences, t_conf_sponsors]:
-        print table.replace('-- ', '')
+        print(table.replace('-- ', ''))
     
 

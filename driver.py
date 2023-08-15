@@ -46,7 +46,7 @@ def main (sourcefile, year, datadir, data_format):
             
             if not record:
                 logging.debug("Completed processing {0}".format(sourcefile))
-                print "Processed {0} records".format(count-1)
+                print("Processed {0} records".format(count-1))
                 break
 
             try :
@@ -100,7 +100,7 @@ def main (sourcefile, year, datadir, data_format):
                 #print Keywords
                 """
             except Exception as e:
-                print "[ERROR:{0}] Caught an exception : {1}".format(wos_id, e)
+                print("[ERROR:{0}] Caught an exception : {1}".format(wos_id, e))
                 pass
 
 
@@ -127,7 +127,7 @@ def main (sourcefile, year, datadir, data_format):
         x.dump(NaIn_list,    h_name_inst,      t_name_inst,        year+'affiliations',   '{0}/affiliations.{1}'.format(datadir, data_format), data_format=data_format)
         """
     except Exception as e:
-        print "[ERROR] Dumping failed for {0}".format(sourcefile)
+        print("[ERROR] Dumping failed for {0}".format(sourcefile))
         logging.error("[ERROR] Dumping failed for {0}".format(sourcefile))
         exit(-1)
         
@@ -145,7 +145,7 @@ if __name__ == "__main__" :
     parser.add_argument("-f", "--format", default="sql", help="Output format to dump into")
     args   = parser.parse_args()
 
-    print "Processing : {0}".format(args.sourcefile)
+    print("Processing : {0}".format(args.sourcefile))
     
     logging.basicConfig(filename=args.logfile, level=log_levels[args.verbosity],
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -161,9 +161,9 @@ if __name__ == "__main__" :
     if os.path.basename(args.sourcefile).startswith('WR'):
         s = args.sourcefile.split('_')
         year = s[1] + "_"
-        print args.sourcefile.replace('.xml', '')
+        print(args.sourcefile.replace('.xml', ''))
 
-    print "[DEBUG] Processing year : {0}".format(year)
+    print("[DEBUG] Processing year : {0}".format(year))
     
     main(args.sourcefile, year, args.dir, args.format)
     

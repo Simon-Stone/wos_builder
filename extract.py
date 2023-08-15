@@ -214,7 +214,7 @@ def extract_pub_info(wos_id, elem):
         pub.update(list(elem.iterfind('./static_data/summary/pub_info'))[0].attrib)
         #print elem.find('./static_data/summary/pub_info')
     except Exception as e:
-        print "Caught error {0}".format(e)
+        print("Caught error {0}".format(e))
         #print list(elem.find('pub_info'))
         #print pub
         logging.error("{0} Could not capture pub_info, Skipping document.".format(wos_id))
@@ -313,10 +313,10 @@ def chunks(l, count):
 def dump(data, header, sql_header, table_name, file_name, data_format="sql"):
     chunksize = 1000
     
-    print  "Writing out {0} to {1}".format(table_name, file_name)
+    print("Writing out {0} to {1}".format(table_name, file_name))
 
     if data_format == "sql" :
-        print "Writing SQL output"
+        print("Writing SQL output")
         with open(file_name, 'w') as f_handle:
         
             f_handle.write(sql_header.format(table_name))
@@ -333,7 +333,7 @@ def dump(data, header, sql_header, table_name, file_name, data_format="sql"):
                 f_handle.seek(-1, 1)
                 f_handle.write(';\n')
     elif data_format == "json" :
-        print "Writing json"
+        print("Writing json")
         datadict = { table_name : data }
         with open(file_name, 'wb') as f_handle:
             json.dump(datadict, f_handle)
@@ -348,7 +348,7 @@ if __name__ == "__main__" :
 
     args   = parser.parse_args()
 
-    print "Processing : {0}".format(args.logfile)
+    print("Processing : {0}".format(args.logfile))
     
     logging.basicConfig(filename=args.logfile, level=log_levels[args.verbosity],
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -357,7 +357,7 @@ if __name__ == "__main__" :
     logging.debug("Document processing starts")
     
     context = load_data(args.sourcefile)
-    print "Done loading data into etree context"
+    print("Done loading data into etree context")
     total = 0
     bad   = 0
     for event, elem in context:
@@ -374,10 +374,10 @@ if __name__ == "__main__" :
                 authors = extract_authors(wos_id, elem)
                 
             except Exception as e:
-                print "Skipping... {0}".format(wos_id)
+                print("Skipping... {0}".format(wos_id))
                 bad += 1
         elem.clear()
 
     logging.debug("Document Complete:{0} with bad/total lines : {1}/{2}".format(args.sourcefile, bad, total))
-    print "Done"
+    print("Done")
 

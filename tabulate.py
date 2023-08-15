@@ -16,7 +16,7 @@ log_levels = { "DEBUG"   : logging.DEBUG,
 
 
 def tabulate(datafile, cnx):
-   print "Tabulate"
+   print("Tabulate")
 
    #tree = ET.parse(datafile)
    #root = tree.getroot()
@@ -29,16 +29,16 @@ def tabulate(datafile, cnx):
    context = iter(context)
 
    # get the root element
-   event, root = context.next()
+   event, root = next(context)
    logging.debug("Got root")
    for event, elem in context:
       #if event == "start":
       #   print "Event:{0} \nElem:{1} \nAttr:{2} \nValue:{3}".format(event, elem.tag, elem.attrib, elem.value)
       
       if elem.tag == "REC" and event=="start":
-         print "Foo"
+         print("Foo")
          for child in elem:
-            print child.tag, child.attrib
+            print(child.tag, child.attrib)
             
       #if event == "end" and elem.tag == "REC":
       #   print "Event:{0} Elem:{1}".format(event, elem)

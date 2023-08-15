@@ -34,9 +34,9 @@ if __name__ == "__main__":
             if not test:
                 break
 
-            print "*"*50
-            print test
-            print "*"*20, count, "*"*30
+            print("*"*50)
+            print(test)
+            print("*"*20, count, "*"*30)
             break
 
     
