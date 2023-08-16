@@ -10,4 +10,5 @@ setup(
     license="MIT",
     packages=["wos_builder"],
     zip_safe=False,
+    scripts=["bin/wos_xml_to_sql"],
 )

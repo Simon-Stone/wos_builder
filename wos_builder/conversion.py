@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import os
-import argparse
 import logging
 import xml.etree.cElementTree as ET
 
@@ -8,16 +6,8 @@ import wos_builder.read_records as rr
 import wos_builder.extract as x
 import wos_builder.db_info as db_info
 
-log_levels = {
-    "DEBUG": logging.DEBUG,
-    "INFO": logging.INFO,
-    "WARNING": logging.WARNING,
-    "ERROR": logging.ERROR,
-    "CRITICAL": logging.CRITICAL,
-}
 
-
-def xml_to_sql(sourcefile, year, datadir, data_format):
+def xml_to_sql(sourcefile, datadir):
     count = 0
     logging.debug("Starting processing {0}".format(sourcefile))
 
@@ -100,144 +90,126 @@ def xml_to_sql(sourcefile, year, datadir, data_format):
             db_info.h_source,
             db_info.t_source,
             "source",
-            "{0}/source.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/source.{1}".format(datadir, "sql"),
         )
         x.dump(
             Edit_list,
             db_info.h_editions,
             db_info.t_editions,
             "editions",
-            "{0}/editions.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/editions.{1}".format(datadir, "sql"),
         )
         x.dump(
             Ftxt_list,
             db_info.h_fundingtexts,
             db_info.t_fundingtexts,
             "fundingtext",
-            "{0}/fundingtext.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/fundingtext.{1}".format(datadir, "sql"),
         )
         x.dump(
             Fund_list,
             db_info.h_funding,
             db_info.t_funding,
             "funding",
-            "{0}/funding.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/funding.{1}".format(datadir, "sql"),
         )
         x.dump(
             Keyw_list,
             db_info.h_keywords,
             db_info.t_keywords,
             "keywords",
-            "{0}/keywords.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/keywords.{1}".format(datadir, "sql"),
         )
         x.dump(
             Keyp_list,
             db_info.h_keywords_plus,
             db_info.t_keywords_plus,
             "keywords_plus",
-            "{0}/keywords_plus.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/keywords_plus.{1}".format(datadir, "sql"),
         )
         x.dump(
             Conf_list,
             db_info.h_conferences,
             db_info.t_conferences,
             "conferences",
-            "{0}/conferences.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/conferences.{1}".format(datadir, "sql"),
         )
         x.dump(
             CoSp_list,
             db_info.h_conf_sponsors,
             db_info.t_conf_sponsors,
             "confSponsors",
-            "{0}/confSponsors.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/confSponsors.{1}".format(datadir, "sql"),
         )
         x.dump(
             Refs_list,
             db_info.h_references,
             db_info.t_references,
             "refs",
-            "{0}/references.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/references.{1}".format(datadir, "sql"),
         )
         x.dump(
             Pubs_list,
             db_info.h_publications,
             db_info.t_publications,
             "publications",
-            "{0}/publications.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/publications.{1}".format(datadir, "sql"),
         )
         x.dump(
             Lang_list,
             db_info.h_languages,
             db_info.t_languages,
             "languages",
-            "{0}/languages.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/languages.{1}".format(datadir, "sql"),
         )
         x.dump(
             Head_list,
             db_info.h_headings,
             db_info.t_headings,
             "headings",
-            "{0}/headings.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/headings.{1}".format(datadir, "sql"),
         )
         x.dump(
             Subh_list,
             db_info.h_subheadings,
             db_info.t_subheadings,
             "subheadings",
-            "{0}/subheadings.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/subheadings.{1}".format(datadir, "sql"),
         )
         x.dump(
             Subj_list,
             db_info.h_subjects,
             db_info.t_subjects,
             "subjects",
-            "{0}/subjects.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/subjects.{1}".format(datadir, "sql"),
         )
         x.dump(
             Publ_list,
             db_info.h_publishers,
             db_info.t_publishers,
             "publishers",
-            "{0}/publishers.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/publishers.{1}".format(datadir, "sql"),
         )
         x.dump(
             Auth_list,
             db_info.h_contributors,
             db_info.t_contributors,
             "contributors",
-            "{0}/contributors.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/contributors.{1}".format(datadir, "sql"),
         )
         x.dump(
             Inst_list,
             db_info.h_institutions,
             db_info.t_institutions,
             "institutions",
-            "{0}/institutions.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/institutions.{1}".format(datadir, "sql"),
         )
         x.dump(
             NaIn_list,
             db_info.h_name_inst,
             db_info.t_name_inst,
             "affiliations",
-            "{0}/affiliations.{1}".format(datadir, data_format),
-            data_format=data_format,
+            "{0}/affiliations.{1}".format(datadir, "sql"),
         )
 
     except Exception:
@@ -246,57 +218,3 @@ def xml_to_sql(sourcefile, year, datadir, data_format):
         exit(-1)
 
     return
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-s", "--sourcefile", default="sample.xml", help="Path to data file"
-    )
-    parser.add_argument(
-        "-v",
-        "--verbosity",
-        default="DEBUG",
-        help="set level of verbosity, DEBUG, INFO, WARN",
-    )
-    parser.add_argument(
-        "-l",
-        "--logfile",
-        default="./extract.log",
-        help="Logfile path. Defaults to ./tabulator.log",
-    )
-    parser.add_argument(
-        "-d",
-        "--dir",
-        default=".",
-        help="Folder to write data to, Default is current folder",
-    )
-    parser.add_argument(
-        "-f", "--format", default="sql", help="Output format to dump into"
-    )
-    args = parser.parse_args()
-
-    print("Processing : {0}".format(args.sourcefile))
-
-    logging.basicConfig(
-        filename=args.logfile,
-        level=log_levels[args.verbosity],
-        format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
-        datefmt="%m-%d %H:%M",
-    )
-
-    logging.debug("Document processing starts")
-
-    if not os.path.exists(args.dir):
-        os.makedirs(args.dir)
-    logging.debug("Data output folder confirmed  :  {0}".format(args.dir))
-
-    year = ""
-    if os.path.basename(args.sourcefile).startswith("WR"):
-        s = args.sourcefile.split("_")
-        year = s[1] + "_"
-        print(args.sourcefile.replace(".xml", ""))
-
-    print("[DEBUG] Processing year : {0}".format(year))
-
-    xml_to_sql(args.sourcefile, year, args.dir, args.format)
