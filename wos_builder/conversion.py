@@ -3,9 +3,10 @@ import os
 import argparse
 import logging
 import xml.etree.cElementTree as ET
-from . import read_records as rr
-from . import extract as x
-from . import db_info
+
+import wos_builder.read_records as rr
+import wos_builder.extract as x
+import wos_builder.db_info as db_info
 
 log_levels = {
     "DEBUG": logging.DEBUG,
@@ -16,7 +17,7 @@ log_levels = {
 }
 
 
-def main(sourcefile, year, datadir, data_format):
+def xml_to_sql(sourcefile, year, datadir, data_format):
     count = 0
     logging.debug("Starting processing {0}".format(sourcefile))
 
@@ -298,4 +299,4 @@ if __name__ == "__main__":
 
     print("[DEBUG] Processing year : {0}".format(year))
 
-    main(args.sourcefile, year, args.dir, args.format)
+    xml_to_sql(args.sourcefile, year, args.dir, args.format)
