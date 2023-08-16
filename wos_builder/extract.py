@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-# coding: utf-8
 import argparse
 
-# import mysql.connector
 import logging
 import xml.etree.cElementTree as ET
 import json
@@ -23,17 +21,14 @@ def load_data(datafile):
     return context
 
 
-# uid -> wos_id, citedAuthor, year , page, volume, citedTitle, citedWork, doi
+# uid -> wos_id
 def extract_references(wos_id, elem):
     references = []
     for refs in list(
         elem.iterfind("./static_data/fullrecord_metadata/references/reference")
     ):
-        # print sub.tag, sub.attrib, sub.text
         cur = {"wos_id": wos_id}
-        # print "-"*50
         for ref in refs.iter():
-            # print ref.tag, ref.text
             cur[str(ref.tag)] = ref.text
         references.extend([cur])
 
@@ -54,7 +49,6 @@ def extract_addresses(wos_id, elem):
     for addresses in elem.iterfind(
         "./static_data/fullrecord_metadata/addresses/address_name"
     ):
-        # print "-"*50
         addr = {
             "wos_id": wos_id,
             "addr_num": list(addresses.iterfind("./address_spec"))[0].attrib["addr_no"],
@@ -63,7 +57,6 @@ def extract_addresses(wos_id, elem):
 
         for address in addresses.iter():
             if address.tag in ["full_address", "city", "state", "country", "zip"]:
-                # print address.tag
                 addr[str(address.tag)] = str(address.text)
 
         orgs = []
@@ -72,7 +65,6 @@ def extract_addresses(wos_id, elem):
                 orgs.extend([item.text])
         if not orgs:
             orgs = ["NULL"]
-        # print "Organizations : ", orgs
 
         suborgs = []
         for item in addresses.iter():
@@ -81,7 +73,6 @@ def extract_addresses(wos_id, elem):
         if not suborgs:
             suborgs = ["NULL"]
 
-        # print "SubOrganizations : ", suborgs
         for org in orgs:
             for suborg in suborgs:
                 t = {"organization": org, "suborganization": suborg}
@@ -89,10 +80,7 @@ def extract_addresses(wos_id, elem):
                 temp.update(t)
                 addresslist.extend([temp])
 
-        # print addresslist
         for name in list(addresses.iterfind("./names/name")):
-            # print "Name: ", name.tag, name.attrib
-            # print "{0} {1} {2}".format(wos_id, name.attrib['seq_no'], name.attrib['addr_no'])
             name_address_relation.extend(
                 [
                     {
@@ -102,7 +90,6 @@ def extract_addresses(wos_id, elem):
                     }
                 ]
             )
-    # print addresslist
     return addresslist, name_address_relation
 
 
@@ -141,8 +128,6 @@ def extract_conferences(wos_id, elem):
     sponsors = []
 
     for conf in list(elem.iterfind("./static_data/summary/conferences/conference")):
-        # Do try catch on each of these
-
         conference = {"wos_id": wos_id}
         conference["conf_id"] = conf.attrib.get("conf_id", "NULL")
 
@@ -184,7 +169,6 @@ def extract_conferences(wos_id, elem):
             conference["conf_host"] = "NULL"
 
         for sponsor in list(conf.iterfind("./sponsors/sponsor")):
-            # print "Sponsor {0}/{1}: {2}".format(wos_id, conference['conf_id'], sponsor.text)
             sponsors.extend(
                 [
                     {
@@ -240,7 +224,6 @@ def extract_pub_info(wos_id, elem):
         # Add the page info
         pub.update(list(elem.iterfind("./static_data/summary/pub_info"))[0].attrib)
     except Exception as e:
-        print("Caught error {0}".format(e))
         logging.error(
             "{0} Could not capture pub_info, Skipping document.".format(wos_id)
         )
@@ -265,14 +248,12 @@ def extract_pub_info(wos_id, elem):
     for item in list(
         elem.iterfind("./dynamic_data/cluster_related/identifiers/identifier")
     ):
-        # print item.tag, item.attrib, item.text
         pub[item.attrib["type"]] = item.attrib["value"]
 
     languages = []
     for lang in list(
         elem.iterfind("./static_data/fullrecord_metadata/languages/language")
     ):
-        # print lang.tag, lang.attrib, lang.text
         languages.extend([{"wos_id": wos_id, "language": lang.text}])
     # Get categorical data
     headings = []
@@ -289,9 +270,7 @@ def extract_pub_info(wos_id, elem):
             "./static_data/fullrecord_metadata/category_info/subheadings/subheading"
         )
     ):
-        # print sub.tag, sub.attrib, sub.text
         subheadings.extend([{"wos_id": wos_id, "subheading": sub.text}])
-    # print "Subheadings : ", subheadings
 
     subjects = []
     for sub in list(
@@ -299,7 +278,6 @@ def extract_pub_info(wos_id, elem):
             "./static_data/fullrecord_metadata/category_info/subjects/subject"
         )
     ):
-        # print sub.tag, sub.attrib, sub.text
         subjects.extend(
             [
                 {
@@ -313,16 +291,12 @@ def extract_pub_info(wos_id, elem):
     for item in list(
         elem.iterfind("./dynamic_data/cluster_related/identifiers/identifier")
     ):
-        # print item.tag, item.attrib, item.text
         pub[item.attrib["type"]] = item.attrib["value"]
-    # print pub
 
     # Find the oases type gold status
     for item in list(elem.iterfind("./dynamic_data/ic_related/oases/oas")):
-        # print item.tag, item.attrib, item.text
         if item.text == "Yes" and item.attrib["type"] == "gold":
             pub["oases_type_gold"] = "Yes"
-            # print "Gold = Yes"
 
     # Add the abstract
     abstract_text = "NULL"
@@ -346,11 +320,9 @@ def extract_keywords(wos_id, elem):
     for keyword in list(
         elem.iterfind("./static_data/fullrecord_metadata/keywords/keyword")
     ):
-        # print "Keyword :", keyword.text
         keywords.extend([{"wos_id": wos_id, "keyword": keyword.text}])
 
     for keyword in list(elem.iterfind("./static_data/item/keywords_plus/keyword")):
-        # print "Plus ", keyword.tag, keyword.text
         keywordsplus.extend([{"wos_id": wos_id, "keyword": keyword.text}])
 
     return keywords, keywordsplus
@@ -367,10 +339,7 @@ def chunks(iterable, count):
 def dump(data, header, sql_header, table_name, file_name, data_format="sql"):
     chunk_size = 1000
 
-    print("Writing out {0} to {1}".format(table_name, file_name))
-
     if data_format == "sql":
-        print("Writing SQL output")
         with open(file_name, "w") as f_handle:
             f_handle.write(sql_header.format(table_name))
             f_handle.write("\n")
@@ -395,7 +364,6 @@ def dump(data, header, sql_header, table_name, file_name, data_format="sql"):
                     f_handle.write("\n")
 
     elif data_format == "json":
-        print("Writing json")
         datadict = {table_name: data}
         with open(file_name, "wb") as f_handle:
             json.dump(datadict, f_handle)
@@ -422,8 +390,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("Processing : {0}".format(args.logfile))
-
     logging.basicConfig(
         filename=args.logfile,
         level=log_levels[args.verbosity],
@@ -434,7 +400,6 @@ if __name__ == "__main__":
     logging.debug("Document processing starts")
 
     context = load_data(args.sourcefile)
-    print("Done loading data into etree context")
     total = 0
     bad = 0
     for event, elem in context:
@@ -451,7 +416,6 @@ if __name__ == "__main__":
                 authors = extract_authors(wos_id, elem)
 
             except Exception:
-                print("Skipping... {0}".format(wos_id))
                 bad += 1
         elem.clear()
 
@@ -460,4 +424,3 @@ if __name__ == "__main__":
             args.sourcefile, bad, total
         )
     )
-    print("Done")
