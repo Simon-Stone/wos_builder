@@ -3,9 +3,9 @@ import os
 import argparse
 import logging
 import xml.etree.cElementTree as ET
-import read_records as rr
-import extract as x
-import db_info
+from . import read_records as rr
+from . import extract as x
+from . import db_info
 
 log_levels = {
     "DEBUG": logging.DEBUG,
@@ -38,7 +38,7 @@ def main(sourcefile, year, datadir, data_format):
     Conf_list = []
     CoSp_list = []
 
-    with open(args.sourcefile, "r") as data:
+    with open(sourcefile, "r") as data:
         while True:
             count += 1
             record = rr.get_record(data)
@@ -179,7 +179,7 @@ def main(sourcefile, year, datadir, data_format):
             db_info.h_languages,
             db_info.t_languages,
             "languages",
-            "{0}/langauges.{1}".format(datadir, data_format),
+            "{0}/languages.{1}".format(datadir, data_format),
             data_format=data_format,
         )
         x.dump(
