@@ -237,8 +237,8 @@ def extract_pub_info(wos_id, elem):
     pub = {"wos_id": wos_id}
 
     try:
-        # Add the page info
         pub.update(list(elem.iterfind("./static_data/summary/pub_info"))[0].attrib)
+        pub.update(list(elem.iterfind("./static_data/summary/pub_info/page"))[0].attrib)
     except Exception as e:
         print("Caught error {0}".format(e))
         logging.error(
