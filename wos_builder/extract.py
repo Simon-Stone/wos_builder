@@ -333,6 +333,8 @@ def extract_unindexed_authors(unindexed_pubs):
     """Extracts authors from unindexed publications in the references"""
     authors = list()
     for pub in unindexed_pubs:
+        if "author" not in pub:
+            continue
         author = dict()
         author["wos_id"] = pub["wos_id"]
         author["role"] = "author"
