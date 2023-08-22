@@ -26,16 +26,12 @@ def load_data(datafile):
 # uid -> wos_id, citedAuthor, year , page, volume, citedTitle, citedWork, doi
 def extract_references(wos_id, elem):
     references = []
-    for refs in list(
+    for ref in list(
         elem.iterfind("./static_data/fullrecord_metadata/references/reference")
     ):
-        # print sub.tag, sub.attrib, sub.text
-        cur = {"wos_id": wos_id}
-        # print "-"*50
-        for ref in refs.iter():
-            # print ref.tag, ref.text
-            cur[str(ref.tag)] = ref.text
-        references.extend([cur])
+        cur = {"wos_id": wos_id, "citedId": ref.find("uid").text}
+
+        references.append(cur)
 
     return references
 
