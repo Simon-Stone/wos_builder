@@ -23,7 +23,7 @@ def load_data(datafile):
     return context
 
 
-# uid -> wos_id, citedAuthor, year , page, volume, citedTitle, citedWork, doi
+# uid -> wos_id
 def extract_references(wos_id, elem):
     references = []
     for ref in list(
