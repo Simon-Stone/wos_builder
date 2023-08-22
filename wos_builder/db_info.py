@@ -39,6 +39,7 @@ h_publications = [
     "doi",  # cluster_related
     "doc_type",
     "title",
+    "source",
     "pubyear",
     "pubmonth",
     "coverdate",
@@ -73,6 +74,8 @@ CREATE TABLE IF NOT EXISTS {0} (
 
     doc_type        varchar(20),
     title           varchar(100),
+
+    source          varchar(100),
     pubyear         varchar(4),
     pubmonth        varchar(10),
     coverdate       varchar(15),

@@ -250,6 +250,8 @@ def extract_pub_info(wos_id, elem):
     for i in elem.iterfind("./static_data/summary/titles/title"):
         pub[str(i.attrib["type"])] = i.text
 
+    pub["title"] = pub["item"]
+
     # Get document type
     try:
         pub["doc_type"] = list(elem.iterfind("./static_data/summary/doctypes/doctype"))[
@@ -313,13 +315,10 @@ def extract_pub_info(wos_id, elem):
     for item in list(
         elem.iterfind("./dynamic_data/cluster_related/identifiers/identifier")
     ):
-        # print item.tag, item.attrib, item.text
         pub[item.attrib["type"]] = item.attrib["value"]
-    # print pub
 
     # Find the oases type gold status
     for item in list(elem.iterfind("./dynamic_data/ic_related/oases/oas")):
-        # print item.tag, item.attrib, item.text
         if item.text == "Yes" and item.attrib["type"] == "gold":
             pub["oases_type_gold"] = "Yes"
             # print "Gold = Yes"
@@ -354,6 +353,47 @@ def extract_keywords(wos_id, elem):
         keywordsplus.extend([{"wos_id": wos_id, "keyword": keyword.text}])
 
     return keywords, keywordsplus
+
+
+def extract_unindexed_authors(unindexed_pubs):
+    """Extracts authors from unindexed publications in the references"""
+    authors = list()
+    for pub in unindexed_pubs:
+        author = dict()
+        author["wos_id"] = pub["wos_id"]
+        author["role"] = "author"
+        author["display_name"] = pub["author"]
+        author["full_name"] = pub["author"]
+        authors.append(author)
+    return authors
+
+
+def extract_unindexed_publications(wos_id, elem):
+    """Extracts info on unindexed publications from the references"""
+    unindexed_pubs = []
+    for ref in elem.iterfind("./static_data/fullrecord_metadata/references/reference"):
+        uid = ref.find("uid").text
+        # An unindexed publication's UID does not start with WOS
+        if not uid.startswith("WOS"):
+            pub = dict()
+            pub["wos_id"] = uid
+
+            pub_to_ref = {
+                "doi": "doi",
+                "author": "citedAuthor",
+                "title": "citedTitle",
+                "source": "citedWork",
+                "pubyear": "year",
+                "vol": "volumne",
+                "begin": "page",
+            }
+            for pub_field, ref_field in pub_to_ref.items():
+                if (child := ref.find(ref_field)) is not None:
+                    pub[pub_field] = child.text
+
+            unindexed_pubs.append(pub)
+
+    return unindexed_pubs
 
 
 # From stackoverflow
