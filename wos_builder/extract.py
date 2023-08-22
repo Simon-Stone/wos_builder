@@ -348,7 +348,10 @@ def extract_unindexed_publications(wos_id, elem):
     """Extracts info on unindexed publications from the references"""
     unindexed_pubs = []
     for ref in elem.iterfind("./static_data/fullrecord_metadata/references/reference"):
-        uid = ref.find("uid").text
+        uid = ref.find("uid")
+        if uid is None:
+            continue
+        uid = uid.text
         # An unindexed publication's UID does not start with WOS
         if not uid.startswith("WOS"):
             pub = dict()
