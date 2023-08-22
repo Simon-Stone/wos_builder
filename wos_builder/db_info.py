@@ -39,6 +39,7 @@ h_publications = [
     "doi",  # cluster_related
     "doc_type",
     "title",
+    "source",
     "pubyear",
     "pubmonth",
     "coverdate",
@@ -46,6 +47,9 @@ h_publications = [
     "vol",
     "pubtype",
     "issue",
+    "begin",
+    "end",
+    "page_count",
     "supplement",
     "special_issue",
     "part_no",
@@ -70,6 +74,8 @@ CREATE TABLE IF NOT EXISTS {0} (
 
     doc_type        varchar(20),
     title           varchar(100),
+
+    source          varchar(100),
     pubyear         varchar(4),
     pubmonth        varchar(10),
     coverdate       varchar(15),
@@ -78,6 +84,9 @@ CREATE TABLE IF NOT EXISTS {0} (
     vol             varchar(5),
     pubtype         varchar(15),
     issue           varchar(5),
+    begin           int unsigned,
+    end             int unsigned,
+    page_count      int unsigned,
     supplement      varchar(5),
     special_issue   varchar(5),
     part_no         varchar(5),
@@ -179,32 +188,14 @@ CREATE TABLE IF NOT EXISTS {0} (
 
 h_references = [
     "wos_id",
-    "uid",  # Primary key
-    "citedAuthor",
-    "year",
-    "page",
-    "volume",
-    "citedTitle",
-    "citedWork",
-    "doi",
-    "art_no",
-    "patent_no",
+    "citedId",  # Primary key
 ]
 t_references = """
 USE wos;
 -- DROP TABLE IF EXISTS {0};
 CREATE TABLE IF NOT EXISTS {0} (
     wos_id varchar(40),
-    uid varchar(50),
-    citedAuthor varchar(100),
-    year   varchar(10),
-    page   varchar(5),
-    volume varchar(5),
-    citedTitle varchar(500),
-    citedWork  varchar(100),
-    doi        varchar(50),
-    art_no     varchar(20),
-    patent_no  varchar(20),
+    citedId varchar(50),
     PRIMARY KEY (wos_id, uid)
 );
 """

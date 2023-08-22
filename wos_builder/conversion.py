@@ -52,6 +52,11 @@ def xml_to_sql(sourcefile, datadir):
                 Subh_list.extend(Subheadings)
                 Subj_list.extend(Subjects)
 
+                UnindexedPubs = x.extract_unindexed_publications(wos_id, REC)
+                Pubs_list.extend(UnindexedPubs)
+                UnindexedAuthors = x.extract_unindexed_authors(UnindexedPubs)
+                Auth_list.extend(UnindexedAuthors)
+
                 Publishers = x.extract_publisher(wos_id, REC)
                 Publ_list.extend(Publishers)
 

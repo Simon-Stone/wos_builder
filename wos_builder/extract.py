@@ -24,13 +24,12 @@ def load_data(datafile):
 # uid -> wos_id
 def extract_references(wos_id, elem):
     references = []
-    for refs in list(
+    for ref in list(
         elem.iterfind("./static_data/fullrecord_metadata/references/reference")
     ):
-        cur = {"wos_id": wos_id}
-        for ref in refs.iter():
-            cur[str(ref.tag)] = ref.text
-        references.extend([cur])
+        cur = {"wos_id": wos_id, "citedId": ref.find("uid").text}
+
+        references.append(cur)
 
     return references
 
@@ -221,8 +220,8 @@ def extract_pub_info(wos_id, elem):
     pub = {"wos_id": wos_id}
 
     try:
-        # Add the page info
         pub.update(list(elem.iterfind("./static_data/summary/pub_info"))[0].attrib)
+        pub.update(list(elem.iterfind("./static_data/summary/pub_info/page"))[0].attrib)
     except Exception as e:
         logging.error(
             "{0} Could not capture pub_info, Skipping document.".format(wos_id)
@@ -232,6 +231,8 @@ def extract_pub_info(wos_id, elem):
     # Get title, source, and source abbreviations
     for i in elem.iterfind("./static_data/summary/titles/title"):
         pub[str(i.attrib["type"])] = i.text
+
+    pub["title"] = pub["item"]
 
     # Get document type
     try:
@@ -326,6 +327,47 @@ def extract_keywords(wos_id, elem):
         keywordsplus.extend([{"wos_id": wos_id, "keyword": keyword.text}])
 
     return keywords, keywordsplus
+
+
+def extract_unindexed_authors(unindexed_pubs):
+    """Extracts authors from unindexed publications in the references"""
+    authors = list()
+    for pub in unindexed_pubs:
+        author = dict()
+        author["wos_id"] = pub["wos_id"]
+        author["role"] = "author"
+        author["display_name"] = pub["author"]
+        author["full_name"] = pub["author"]
+        authors.append(author)
+    return authors
+
+
+def extract_unindexed_publications(wos_id, elem):
+    """Extracts info on unindexed publications from the references"""
+    unindexed_pubs = []
+    for ref in elem.iterfind("./static_data/fullrecord_metadata/references/reference"):
+        uid = ref.find("uid").text
+        # An unindexed publication's UID does not start with WOS
+        if not uid.startswith("WOS"):
+            pub = dict()
+            pub["wos_id"] = uid
+
+            pub_to_ref = {
+                "doi": "doi",
+                "author": "citedAuthor",
+                "title": "citedTitle",
+                "source": "citedWork",
+                "pubyear": "year",
+                "vol": "volumne",
+                "begin": "page",
+            }
+            for pub_field, ref_field in pub_to_ref.items():
+                if (child := ref.find(ref_field)) is not None:
+                    pub[pub_field] = child.text
+
+            unindexed_pubs.append(pub)
+
+    return unindexed_pubs
 
 
 # From stackoverflow
