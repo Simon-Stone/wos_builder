@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+from itertools import islice
 
 import logging
 import xml.etree.cElementTree as ET
@@ -27,6 +28,8 @@ def extract_references(wos_id, elem):
     for ref in list(
         elem.iterfind("./static_data/fullrecord_metadata/references/reference")
     ):
+        if ref.find("uid") is None:
+            continue
         cur = {"wos_id": wos_id, "citedId": ref.find("uid").text}
 
         references.append(cur)
@@ -375,22 +378,24 @@ def extract_unindexed_publications(wos_id, elem):
     return unindexed_pubs
 
 
-# From stackoverflow
-# http://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
-def chunks(iterable, count):
-    """Yield successive n-sized chunks from iterable."""
-    for i in range(0, len(iterable), count):
-        yield iterable[: i + count]
+def batched(iterable, n):
+    "Batch data into tuples of length n. The last batch may be shorter."
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError("n must be at least one")
+    it = iter(iterable)
+    while batch := tuple(islice(it, n)):
+        yield batch
 
 
 def dump(data, header, sql_header, table_name, file_name, data_format="sql"):
-    chunk_size = 1000
+    batch_size = 1000
 
     if data_format == "sql":
         with open(file_name, "w") as f_handle:
             f_handle.write(sql_header.format(table_name))
             f_handle.write("\n")
-            for chunk in chunks(data, chunk_size):
+            for batch in batched(data, batch_size):
                 f_handle.write(
                     "INSERT IGNORE INTO {0} ({1})\n".format(
                         table_name, ", ".join(header)
@@ -398,13 +403,13 @@ def dump(data, header, sql_header, table_name, file_name, data_format="sql"):
                 )
                 f_handle.write("VALUES\n")
 
-                for idx, row in enumerate(chunk):
+                for idx, row in enumerate(batch):
                     f_handle.write("(")
                     f_handle.write(
                         ",".join([json.dumps(row.get(attr, "NULL")) for attr in header])
                     )
                     f_handle.write(")")
-                    if idx == len(chunk) - 1:
+                    if idx == len(batch) - 1:
                         f_handle.write(";")
                     else:
                         f_handle.write(",")

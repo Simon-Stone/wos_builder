@@ -85,18 +85,11 @@ def xml_to_sql(sourcefile, datadir):
                 Keyw_list.extend(Keywords)
                 Keyp_list.extend(Keywords_plus)
 
-            except Exception as e:
+            except ValueError as e:
                 print("[ERROR:{0}] Caught an exception : {1}".format(wos_id, e))
-                pass
 
     try:
-        x.dump(
-            Pubs_list,
-            db_info.h_source,
-            db_info.t_source,
-            "source",
-            "{0}/source.{1}".format(datadir, "sql"),
-        )
+        logging.debug("Writing editions data to file...")
         x.dump(
             Edit_list,
             db_info.h_editions,
@@ -104,6 +97,7 @@ def xml_to_sql(sourcefile, datadir):
             "editions",
             "{0}/editions.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing funding text data to file...")
         x.dump(
             Ftxt_list,
             db_info.h_fundingtexts,
@@ -111,6 +105,7 @@ def xml_to_sql(sourcefile, datadir):
             "fundingtext",
             "{0}/fundingtext.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing funding data to file...")
         x.dump(
             Fund_list,
             db_info.h_funding,
@@ -118,6 +113,7 @@ def xml_to_sql(sourcefile, datadir):
             "funding",
             "{0}/funding.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing keywords data to file...")
         x.dump(
             Keyw_list,
             db_info.h_keywords,
@@ -125,6 +121,7 @@ def xml_to_sql(sourcefile, datadir):
             "keywords",
             "{0}/keywords.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing keywords plus data to file...")
         x.dump(
             Keyp_list,
             db_info.h_keywords_plus,
@@ -132,6 +129,7 @@ def xml_to_sql(sourcefile, datadir):
             "keywords_plus",
             "{0}/keywords_plus.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing conferences data to file...")
         x.dump(
             Conf_list,
             db_info.h_conferences,
@@ -139,6 +137,7 @@ def xml_to_sql(sourcefile, datadir):
             "conferences",
             "{0}/conferences.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing conference sponsors data to file...")
         x.dump(
             CoSp_list,
             db_info.h_conf_sponsors,
@@ -146,6 +145,7 @@ def xml_to_sql(sourcefile, datadir):
             "confSponsors",
             "{0}/confSponsors.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing reference data to file...")
         x.dump(
             Refs_list,
             db_info.h_references,
@@ -153,6 +153,7 @@ def xml_to_sql(sourcefile, datadir):
             "refs",
             "{0}/references.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing publication data to file...")
         x.dump(
             Pubs_list,
             db_info.h_publications,
@@ -160,6 +161,7 @@ def xml_to_sql(sourcefile, datadir):
             "publications",
             "{0}/publications.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing language data to file...")
         x.dump(
             Lang_list,
             db_info.h_languages,
@@ -167,6 +169,7 @@ def xml_to_sql(sourcefile, datadir):
             "languages",
             "{0}/languages.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing headings data to file...")
         x.dump(
             Head_list,
             db_info.h_headings,
@@ -174,6 +177,7 @@ def xml_to_sql(sourcefile, datadir):
             "headings",
             "{0}/headings.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing subheadings data to file...")
         x.dump(
             Subh_list,
             db_info.h_subheadings,
@@ -181,6 +185,7 @@ def xml_to_sql(sourcefile, datadir):
             "subheadings",
             "{0}/subheadings.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing subjects data to file...")
         x.dump(
             Subj_list,
             db_info.h_subjects,
@@ -188,6 +193,7 @@ def xml_to_sql(sourcefile, datadir):
             "subjects",
             "{0}/subjects.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing publisher data to file...")
         x.dump(
             Publ_list,
             db_info.h_publishers,
@@ -195,6 +201,7 @@ def xml_to_sql(sourcefile, datadir):
             "publishers",
             "{0}/publishers.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing contributor data to file...")
         x.dump(
             Auth_list,
             db_info.h_contributors,
@@ -202,6 +209,7 @@ def xml_to_sql(sourcefile, datadir):
             "contributors",
             "{0}/contributors.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing institutions data to file...")
         x.dump(
             Inst_list,
             db_info.h_institutions,
@@ -209,6 +217,7 @@ def xml_to_sql(sourcefile, datadir):
             "institutions",
             "{0}/institutions.{1}".format(datadir, "sql"),
         )
+        logging.debug("Writing affiliations data to file...")
         x.dump(
             NaIn_list,
             db_info.h_name_inst,

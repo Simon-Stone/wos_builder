@@ -196,7 +196,7 @@ USE wos;
 CREATE TABLE IF NOT EXISTS {0} (
     wos_id varchar(40),
     citedId varchar(50),
-    PRIMARY KEY (wos_id, uid)
+    PRIMARY KEY (wos_id, citedId)
 );
 """
 
