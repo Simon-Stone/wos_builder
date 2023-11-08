@@ -235,7 +235,7 @@ def extract_pub_info(wos_id, elem):
     for i in elem.iterfind("./static_data/summary/titles/title"):
         pub[str(i.attrib["type"])] = i.text
 
-    pub["title"] = pub["item"]
+    pub["title"] = pub.get("item")
 
     # Get document type
     try:
